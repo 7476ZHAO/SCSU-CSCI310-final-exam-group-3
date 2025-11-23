@@ -12,7 +12,7 @@ lock = threading.Lock()
 
 # Track if player is alive
 player_ids = ["B", "T", "M", "D"]
-is_alive = {pid: True for pid in player_ids}
+is_alive = {pid: True for pid in player_ids}# dic comprehension
 
 # Mountain location
 mountain_location = [
@@ -30,6 +30,7 @@ def get_free_location(exclude_locations):
 carrot_locations = []
 exclude = [mountain_location]
 
+#grab two random pos for carrots
 for _ in range(NUM_CARROTS):
     pos = get_free_location(exclude)
     carrot_locations.append(pos)
@@ -48,7 +49,7 @@ players = {}
 for pid in player_ids:
     pos = get_free_location(exclude + list(current_locations.values()))
     current_locations[pid] = pos
-    players[pid] = Character(pos[0], pos[1], pid, BOARD_SIZE)
+    players[pid] = Character(pos[0], pos[1], pid, BOARD_SIZE)#define a new charactor with row, column, name, board_size as a value in dic player
     board[pos[0]][pos[1]] = pid
 
 player_cycles = {pid: 0 for pid in player_ids}
@@ -136,7 +137,7 @@ def take_turn(player_id):
         if not is_alive[player_id]:
             return
 
-        with lock:
+        with lock:#Run the code inside the block, release the lock when done
             player_cycles[player_id] += 1
 
         # M teleports mountain every 3 cycles
@@ -170,7 +171,7 @@ def take_turn(player_id):
                             del current_locations[pid]
                             break
 
-        # Check carrot pickup
+        # Check carrot pickup, if picked up, update player's name with adding "C"
         for carrot in list(carrot_locations):  # iterate on copy to safely remove
             if carrot == [character.row, character.column]:
                 character.pick_carrot()  # changes name to M(C), B(C), etc.
@@ -181,9 +182,9 @@ def take_turn(player_id):
                 board[character.row][character.column] = character.name
                 break
 
-        # Update position on board
+        # Update position on board, move the player from old position to new position
         with lock:
-            old = current_locations.get(player_id)
+            old = current_locations.get(player_id)#The function get can retrive the value for key "player_id"
             if old:
                 board[old[0]][old[1]] = " "
             current_locations[player_id] = [character.row, character.column]
